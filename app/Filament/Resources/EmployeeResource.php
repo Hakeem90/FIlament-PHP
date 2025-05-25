@@ -51,7 +51,7 @@ final class EmployeeResource extends Resource
                             ->relationship(name: 'country', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
-                            ->afterStateUpdated(function (Set $set) {
+                            ->afterStateUpdated(function (Set $set): void {
                                 $set('state_id', null);
                                 $set('city_id', null);
                             })
@@ -62,7 +62,7 @@ final class EmployeeResource extends Resource
                                 ->where('country_id', $get('country_id'))
                                 ->pluck('name', 'id'))
                             ->live()
-                            ->afterStateUpdated(fn (Set $set) => $set('city_id', null))
+                            ->afterStateUpdated(fn (Set $set): mixed => $set('city_id', null))
                             ->searchable()
                             ->preload()
                             ->required(),
@@ -171,15 +171,15 @@ final class EmployeeResource extends Resource
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
+                    ->query(function (Builder $builder, array $data): Builder {
+                        return $builder
                             ->when(
                                 $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                fn (Builder $builder, $date): Builder => $builder->whereDate('created_at', '>=', $date),
                             )
                             ->when(
                                 $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                fn (Builder $builder, $date): Builder => $builder->whereDate('created_at', '<=', $date),
                             );
                     }),
             ])
