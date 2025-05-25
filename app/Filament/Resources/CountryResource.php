@@ -1,19 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CountryResource\Pages;
-use App\Filament\Resources\CountryResource\RelationManagers;
 use App\Models\Country;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CountryResource extends Resource
+final class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
 
@@ -34,17 +33,17 @@ class CountryResource extends Resource
         return $form
             ->schema([
 
-                Forms\Components\TextInput::make('name',)
-                ->required()
-                ->maxLength(255),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('code')
-                ->required()
-                ->maxLength(255),
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\TextInput::make('phonecode')
-                ->required()
-                ->maxLength(255),
+                    ->required()
+                    ->maxLength(255),
 
                 //
             ]);
@@ -61,9 +60,9 @@ class CountryResource extends Resource
                 Tables\Columns\TextColumn::make('code')
                     ->searchable()
                     ->sortable(),
-                    Tables\Columns\TextColumn::make('phonecode')
+                Tables\Columns\TextColumn::make('phonecode')
                     ->numeric(),
-                    Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -71,7 +70,7 @@ class CountryResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                    
+
             ])
             ->filters([
                 //

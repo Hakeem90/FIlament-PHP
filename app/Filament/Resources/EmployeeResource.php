@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EmployeeResource\Pages;
-use App\Filament\Resources\EmployeeResource\RelationManagers;
 use App\Models\City;
 use App\Models\Employee;
 use App\Models\State;
@@ -18,17 +19,15 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
-use Schema;
 
-class EmployeeResource extends Resource
+final class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static?string $navigationGroup = 'Employee Management';
+    protected static ?string $navigationGroup = 'Employee Management';
 
     public static function form(Form $form): Form
     {
@@ -47,71 +46,71 @@ class EmployeeResource extends Resource
                 //     ->required()
                 //     ->numeric(),
                 Forms\Components\Section::make('Relationships')
-                ->schema([
-                    Forms\Components\Select::make('country_id')
-                    ->relationship(name: 'country', titleAttribute: 'name')
-                    ->searchable()
-                    ->preload()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('state_id', null);
-                        $set('city_id', null);
-                    })
-                    ->live()
-                    ->required(),
-                        Forms\Components\Select::make('state_id')
-                        ->options(fn(Get $get): Collection => State::query()
-                        ->where('country_id', $get('country_id'))
-                        ->pluck('name', 'id'))
-                        ->live()
-                        ->afterStateUpdated(fn(Set $set) => $set('city_id', null))
-                        ->searchable()
-                        ->preload()
+                    ->schema([
+                        Forms\Components\Select::make('country_id')
+                            ->relationship(name: 'country', titleAttribute: 'name')
+                            ->searchable()
+                            ->preload()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('state_id', null);
+                                $set('city_id', null);
+                            })
+                            ->live()
                             ->required(),
-                            Forms\Components\Select::make('city_id')
-                            ->options(fn(Get $get): Collection => City::query()
-                            ->where('state_id', $get('state_id'))
-                            ->pluck('name', 'id'))
+                        Forms\Components\Select::make('state_id')
+                            ->options(fn (Get $get): Collection => State::query()
+                                ->where('country_id', $get('country_id'))
+                                ->pluck('name', 'id'))
+                            ->live()
+                            ->afterStateUpdated(fn (Set $set) => $set('city_id', null))
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        Forms\Components\Select::make('city_id')
+                            ->options(fn (Get $get): Collection => City::query()
+                                ->where('state_id', $get('state_id'))
+                                ->pluck('name', 'id'))
                             ->live()
                             ->searchable()
                             ->preload()
-                                ->required(),
-                                Forms\Components\Select::make('department_id')
-                                ->relationship(name: 'department', titleAttribute: ('name'))
-                                ->searchable()
-                                ->preload()
-                                    ->required(),
-                ])->columns(2),
+                            ->required(),
+                        Forms\Components\Select::make('department_id')
+                            ->relationship(name: 'department', titleAttribute: ('name'))
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                    ])->columns(2),
                 Forms\Components\Section::make('User address')
-                ->description('Input your address details here.')
-                ->schema([
-                    Forms\Components\TextInput::make('address')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('zip_code')
-                    ->required()
-                    ->maxLength(255),
-                ])->columns(2),
+                    ->description('Input your address details here.')
+                    ->schema([
+                        Forms\Components\TextInput::make('address')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('zip_code')
+                            ->required()
+                            ->maxLength(255),
+                    ])->columns(2),
                 Forms\Components\Section::make('User Name')
-                ->description('Input your user details here.')
-                ->schema([
-                    Forms\Components\TextInput::make('first_name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('last_name')
-                    ->required()
-                    ->maxLength(255),
-                    Forms\Components\TextInput::make('middle_name')
-                    ->required()
-                    ->maxLength(255),
-                ])->columns(3),
+                    ->description('Input your user details here.')
+                    ->schema([
+                        Forms\Components\TextInput::make('first_name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('last_name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('middle_name')
+                            ->required()
+                            ->maxLength(255),
+                    ])->columns(3),
                 Forms\Components\Section::make('Dates')
-                ->schema([
-                    Forms\Components\DatePicker::make('date_of_birth')
-                    ->native()
-                    ->required(),
-                Forms\Components\DatePicker::make('date_hired')
-                    ->required()
-                ])->columns(2)
+                    ->schema([
+                        DatePicker::make('date_of_birth')
+                            ->native()
+                            ->required(),
+                        DatePicker::make('date_hired')
+                            ->required(),
+                    ])->columns(2),
             ])->columns(3);
     }
 
@@ -161,28 +160,28 @@ class EmployeeResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('Department')
-                ->relationship('department', 'name')
-                ->searchable()
-                ->preload()
-                ->label('Filter by Department')
-                ->indicator('Department'),
+                    ->relationship('department', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label('Filter by Department')
+                    ->indicator('Department'),
 
                 Filter::make('created_at')
-    ->form([
-        DatePicker::make('created_from'),
-        DatePicker::make('created_until'),
-    ])
-    ->query(function (Builder $query, array $data): Builder {
-        return $query
-            ->when(
-                $data['created_from'],
-                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-            )
-            ->when(
-                $data['created_until'],
-                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-            );
-    })
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StateResource\Pages;
-use App\Filament\Resources\StateResource\RelationManagers;
 use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,10 +13,8 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class StateResource extends Resource
+final class StateResource extends Resource
 {
     protected static ?string $model = State::class;
 
@@ -34,9 +33,9 @@ class StateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('country_id')
-                ->relationship(name: 'country', titleAttribute: 'name')
-                ->searchable()
-                ->preload()
+                    ->relationship(name: 'country', titleAttribute: 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Forms\Components\TextInput::make('name')
                     ->required()
@@ -81,10 +80,10 @@ class StateResource extends Resource
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
-        ->schema([
-            TextEntry::make('country.name')->label('Country Name'),
-            TextEntry::make('name')->label('State Name'),
-        ]);
+            ->schema([
+                TextEntry::make('country.name')->label('Country Name'),
+                TextEntry::make('name')->label('State Name'),
+            ]);
     }
 
     public static function getRelations(): array
@@ -93,8 +92,6 @@ class StateResource extends Resource
             //
         ];
     }
-
-    
 
     public static function getPages(): array
     {
