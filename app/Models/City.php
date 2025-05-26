@@ -26,6 +26,6 @@ final class City extends Model
 
     public function employees(): HasMany
     {
-        return $this->hasMnay(Employee::class);
+        return $this->hasMany(Employee::class);
     }
 }
