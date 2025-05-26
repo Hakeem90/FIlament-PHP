@@ -39,3 +39,6 @@ jobs:
 
       - name: Generate keys
         run: php artisan key:generate
+        
+      - name: Tests
+        run: composer test
